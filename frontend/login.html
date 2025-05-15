@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login/Register</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f1f5f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #ffffff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      width: 350px;
+    }
+
+    .tab-buttons {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .tab-buttons button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background-color: #e5e7eb;
+      color: #111827;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 8px 8px 0 0;
+      transition: background-color 0.3s;
+    }
+
+    .tab-buttons button.active {
+      background-color: #3b82f6;
+      color: white;
+    }
+
+    .form-section {
+      display: none;
+    }
+
+    .form-section.active {
+      display: block;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      outline: none;
+      transition: 0.3s;
+    }
+
+    input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    button.submit {
+      width: 100%;
+      padding: 10px;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button.submit:hover {
+      background-color: #2563eb;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="tab-buttons">
+      <button id="showLogin" class="active" onclick="toggleForm('login')">Login</button>
+      <button id="showRegister" onclick="toggleForm('register')">Register</button>
+    </div>
+
+    <div id="loginForm" class="form-section active">
+      <input id="log-email" placeholder="Email">
+      <input id="log-pass" type="password" placeholder="Password">
+      <button class="submit" onclick="login()">Login</button>
+    </div>
+
+    <div id="registerForm" class="form-section">
+      <input id="reg-name" placeholder="Name">
+      <input id="reg-email" placeholder="Email">
+      <input id="reg-pass" type="password" placeholder="Password">
+      <button class="submit" onclick="register()">Register</button>
+    </div>
+  </div>
+
+  <script>
+    function toggleForm(form) {
+      const loginBtn = document.getElementById("showLogin");
+      const registerBtn = document.getElementById("showRegister");
+      const loginForm = document.getElementById("loginForm");
+      const registerForm = document.getElementById("registerForm");
+
+      if (form === "login") {
+        loginForm.classList.add("active");
+        registerForm.classList.remove("active");
+        loginBtn.classList.add("active");
+        registerBtn.classList.remove("active");
+      } else {
+        registerForm.classList.add("active");
+        loginForm.classList.remove("active");
+        registerBtn.classList.add("active");
+        loginBtn.classList.remove("active");
+      }
+    }
+
+    async function register() {
+      const res = await fetch('http://localhost:3000/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: document.getElementById("reg-name").value,
+          email: document.getElementById("reg-email").value,
+          password: document.getElementById("reg-pass").value
+        })
+      });
+      const data = await res.json();
+      alert(data.message);
+    }
+
+    async function login() {
+      const res = await fetch('http://localhost:3000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: document.getElementById("log-email").value,
+          password: document.getElementById("log-pass").value
+        })
+      });
+      const data = await res.json();
+      alert(data.message);
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        // Redirect to index.html on successful login
+        window.location.href = "index.html"; // This will navigate to index.html
+      }
+    }
+  </script>
+</body>
+</html>
